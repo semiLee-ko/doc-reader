@@ -2,22 +2,57 @@ import { MLCEngine } from "@mlc-ai/web-llm";
 
 let engine: MLCEngine | null = null;
 
-const MODEL_ID = "gemma-2-2b-it-q4f16_1-MLC";
+const MODEL_ID = "gemma-2-2b-it-q4f16_1-MLC"; // Uses f16 quantization
 
 export async function initEngine(onProgress?: (progress: number, text: string) => void) {
     if (engine) return engine;
 
-    engine = new MLCEngine();
-    engine.setInitProgressCallback((progress) => {
-        console.log("LLM Init Progress:", progress);
-        if (onProgress) onProgress(progress.progress, progress.text);
-    });
+    try {
+        const nav = navigator as any;
+        // 1. Check WebGPU Support
+        if (!nav.gpu) {
+            throw new Error("브라우저가 WebGPU를 지원하지 않습니다. 최신 크롬(Chrome) 브라우저를 사용해 주세요.");
+        }
 
-    await engine.reload(MODEL_ID, {
-        context_window_size: 8192,
-    });
+        const adapter = await nav.gpu.requestAdapter();
+        if (!adapter) {
+            throw new Error("그래픽 가속기(GPU)를 찾을 수 없습니다.");
+        }
 
-    return engine;
+        // 2. Check for f16 support (required by q4f16_1 models)
+        const supportsF16 = adapter.features.has("shader-f16");
+        console.log("WebGPU supports shader-f16:", supportsF16);
+
+        // If f16 is not supported, this model might fail on some devices with the VK_ERROR_UNKNOWN error.
+        // For now, we'll try to proceed but with a smaller context window to save memory.
+        const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+        const contextWindow = isMobile ? 1024 : 4096; // Drastically reduce for mobile
+
+        engine = new MLCEngine();
+        engine.setInitProgressCallback((progress) => {
+            console.log("LLM Init Progress:", progress);
+            if (onProgress) onProgress(progress.progress, progress.text);
+        });
+
+        await engine.reload(MODEL_ID, {
+            context_window_size: contextWindow,
+        });
+
+        return engine;
+    } catch (error: any) {
+        console.error("LLM Initialization failed:", error);
+        let userMessage = "AI 모델을 불러오는 중 오류가 발생했습니다.";
+
+        if (error.message?.includes("VK_ERROR_UNKNOWN") || error.message?.includes("ComputePipeline")) {
+            userMessage = "기기 성능이나 브라우저 설정 문제로 AI 분석 기능을 사용할 수 없습니다. 가능하면 PC의 최신 크롬 브라우저를 사용해 주세요.";
+        } else if (error.message) {
+            userMessage = error.message;
+        }
+
+        alert(userMessage);
+        engine = null;
+        throw error;
+    }
 }
 
 export async function summarizeText(text: string): Promise<any> {
