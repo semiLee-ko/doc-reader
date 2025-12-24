@@ -5,7 +5,7 @@ import { Loader, Center, Text } from '@mantine/core';
 import * as pdfjsLib from 'pdfjs-dist';
 
 // Setting up the worker via CDN to avoid local build issues
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 interface PdfPreviewProps {
     fileUrl: string;
