@@ -1,6 +1,4 @@
-import { MLCEngine } from "@mlc-ai/web-llm";
-
-let engine: MLCEngine | null = null;
+let engine: any | null = null;
 
 const MODEL_ID = "gemma-2-2b-it-q4f16_1-MLC"; // Uses f16 quantization
 
@@ -8,6 +6,7 @@ export async function initEngine(onProgress?: (progress: number, text: string) =
     if (engine) return engine;
 
     try {
+        const { MLCEngine } = await import("@mlc-ai/web-llm");
         const nav = navigator as any;
         // 1. Check WebGPU Support
         if (!nav.gpu) {

@@ -1,5 +1,3 @@
-import { createWorker } from 'tesseract.js';
-
 let pdfjsLib: any = null;
 let tesseractWorker: any = null;
 
@@ -13,6 +11,7 @@ async function getPdfJs() {
 
 async function getTesseractWorker() {
     if (tesseractWorker) return tesseractWorker;
+    const { createWorker } = await import('tesseract.js');
     tesseractWorker = await createWorker(['kor', 'eng']);
     return tesseractWorker;
 }
