@@ -6,7 +6,7 @@ AI를 활용하여 다양한 문서(PDF, 이미지)를 분석하고 한국어로
 ## 주요 기능
 
 - **PDF & 이미지 분석**: 디지털 PDF 뿐만 아니라 스캔된 문서, 사진 촬영된 이미지도 분석 가능합니다.
-- **로컬 분석 (Privacy-first)**: 문서를 서버로 전송하지 않고 사용자의 브라우저 내에서 직접 OCR(Tesseract.js)과 LLM(WebLLM / Gemma 2B)을 사용하여 처리합니다.
+- **클라우드 분석 (Fast & Accurate)**: 문서를 서버에서 직접 처리하여 모바일에서도 튕김 없이 빠르고 정확하게 분석합니다. (Groq API + Llama 3)
 - **한국어 요약 및 답변**: 문서의 핵심 내용을 콕 집어서 한국어로 요약해주며, 추가적인 질문도 가능합니다.
 - **음성 인터페이스**: TTS(Text-to-Speech)와 STT(Speech-to-Text)를 지원하여 음성으로 대화할 수 있습니다.
 
@@ -14,8 +14,8 @@ AI를 활용하여 다양한 문서(PDF, 이미지)를 분석하고 한국어로
 
 - **Framework**: Next.js 15
 - **UI Library**: Mantine UI, Lucide React
-- **OCR**: Tesseract.js
-- **LLM**: @mlc-ai/web-llm (Gemma 2B model)
+- **OCR**: Tesseract.js (Browser-side)
+- **LLM**: Groq Cloud API (Llama 3.3 70B model)
 - **PDF Handling**: pdfjs-dist
 - **Voice**: Web Speech API (Browser Native)
 
