@@ -6,10 +6,10 @@ export async function initEngine(onProgress?: (progress: number, text: string) =
 }
 
 export async function summarizeText(text: string): Promise<any> {
-    const GROQ_API_KEY = "YOUR_GROQ_API_KEY_HERE"; // 사용자가 여기에 직접 키를 입력해야 합니다.
+    const GROQ_API_KEY = process.env.NEXT_PUBLIC_GROQ_API_KEY || "YOUR_GROQ_API_KEY_HERE";
 
     if (GROQ_API_KEY === "YOUR_GROQ_API_KEY_HERE") {
-        throw new Error("분석을 시작하려면 lib/llm.ts 파일에 Groq API 키를 입력해 주세요.");
+        throw new Error("분석을 시작하려면 GitHub Secrets에 NEXT_PUBLIC_GROQ_API_KEY를 등록해 주세요.");
     }
 
     const prompt = `당신은 문서 해석 전문가 비서입니다. 아래 [문서 원본]을 읽고 어르신들께 설명하듯 친절한 한국어로 분석해 주세요.
@@ -65,10 +65,10 @@ ${text.slice(0, 10000)}
 }
 
 export async function askLlm(prompt: string, context?: string): Promise<string> {
-    const GROQ_API_KEY = "YOUR_GROQ_API_KEY_HERE"; // 동일한 키 사용
+    const GROQ_API_KEY = process.env.NEXT_PUBLIC_GROQ_API_KEY || "YOUR_GROQ_API_KEY_HERE";
 
     if (GROQ_API_KEY === "YOUR_GROQ_API_KEY_HERE") {
-        return "AI와 대화하려면 먼저 API 키를 설정해 주세요.";
+        return "AI와 대화하려면 API 키를 등록해 주세요.";
     }
 
     const systemPrompt = `당신은 어르신을 돕는 친절한 '문서 해석 비서'입니다. 
