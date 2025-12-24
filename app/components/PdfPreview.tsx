@@ -4,9 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Loader, Center, Text } from '@mantine/core';
 import * as pdfjsLib from 'pdfjs-dist';
 
-// Setting up the worker via CDN to avoid local build issues
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
-
 interface PdfPreviewProps {
     fileUrl: string;
     width?: number; // Target width (canvas will scale to this)
@@ -20,6 +17,10 @@ export default function PdfPreview({ fileUrl, width = 240, onLoad }: PdfPreviewP
 
     useEffect(() => {
         let isCancelled = false;
+
+        // Ensure worker is set up correctly inside the effect to avoid top-level browser-API crashes
+        const version = (pdfjsLib as any).version || '5.4.449';
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.min.mjs`;
 
         const renderPdf = async () => {
             try {
@@ -77,7 +78,7 @@ export default function PdfPreview({ fileUrl, width = 240, onLoad }: PdfPreviewP
         return () => {
             isCancelled = true;
         };
-    }, [fileUrl, width]);
+    }, [fileUrl, width, onLoad]);
 
     return (
         <div style={{ position: 'relative', width: width, background: '#f8f9fa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
